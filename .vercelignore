@@ -1,0 +1,10 @@
+# Only the static showcase is deployed. The complete backend stays in GitHub.
+*.py
+requirements.txt
+Dockerfile
+data/
+.qa/
+.npm-cache/
+**/node_modules/
+**/__pycache__/
+.env*

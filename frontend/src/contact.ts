@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from './data';
+import { isShowcase } from './siteMode';
 
 export type SocialLink = { label: string; url: string };
 export type ContactDetails = {
@@ -42,6 +43,7 @@ export function whatsappUrl(number: string, message?: string): string {
 export function useContact() {
   const [contact, setContact] = useState(defaultContact);
   useEffect(() => {
+    if (isShowcase) return;
     let mounted = true;
     api<Partial<ContactDetails>>('/contact').then(data => {
       if (!mounted) return;

@@ -1,53 +1,45 @@
-# Configuration Vercel — vitrine
+# Vercel — une seule application Vite
 
-Le fichier `vercel.json` prépare deux services dans un seul projet. Cette configuration correspond au choix d'une vitrine avec partage du brief sur WhatsApp. La version complète Python/SQLite reste disponible en local ou avec le Dockerfile.
+La vitrine se déploie comme un seul projet statique. Aucun service Python ni binding n'est nécessaire. Le backend complet reste dans le dépôt pour une utilisation locale ou avec un hébergement adapté.
 
-## Services et routes proposés
+## Réglages de l'import
 
-| Service | Racine | Entrée | Routes publiques |
-| --- | --- | --- | --- |
-| `frontend` | `frontend` | Vite, build `npm run build:vitrine` | `/`, `/services`, `/realisations`, `/a-propos`, `/contact`, `/brief`, `/confidentialite` et images |
-| `app` | `.` | `vercel_app:application` | `/api/*` ; seules les lectures `/api/contact` et `/api/health` sont actives |
+| Champ Vercel | Valeur |
+| --- | --- |
+| Root Directory | `./` |
+| Application / Framework Preset | **Vite** |
+| Install Command | `npm run setup` |
+| Build Command | `npm run build:vitrine` |
+| Output Directory | `frontend/dist` |
 
-Le catch-all frontend est placé après `/api/*`. Les réécritures internes au service frontend permettent d'ouvrir directement les pages React.
+`vercel.json` contient ces réglages et la réécriture des routes React vers `/index.html`. Il remplace la précédente configuration multi-services : il n'y a pas deux déploiements à effectuer.
 
-Les appels du navigateur restent des requêtes relatives vers `/api/contact`, sur le même domaine. Il n'existe aucun appel serveur-à-serveur entre les deux services : **aucun binding n'est nécessaire**. Un frontend Vite statique ne peut pas lire un binding réservé aux fonctions à l'exécution. Ne pas inventer de variable `BACKEND_URL` et ne pas injecter d'URL interne dans le JavaScript public.
+Le build inclut le logo et toutes les images. `.vercelignore` exclut les sources Python et leur configuration du déploiement statique. Les fichiers Python restent disponibles dans GitHub.
 
-## Périmètre de la vitrine
+## Fonctions de la vitrine
 
-- Pages, galerie, animations, téléphone, localisation et liens sociaux.
+- Pages, galerie, animations, téléphone, localisation et réseaux sociaux.
 - Préparation du brief, sauvegarde locale volontaire, copie et export texte.
-- Le partage ouvre WhatsApp avec le brief préparé ; le visiteur valide ensuite l'envoi dans WhatsApp.
-- Les pièces jointes peuvent être partagées directement dans la conversation WhatsApp.
-- Aucun enregistrement de demandes sur Vercel, aucune pièce jointe sur disque et aucune administration en ligne.
-- `/admin` affiche la page introuvable dans ce build. Les anciennes API d'administration et de soumission renvoient une indisponibilité explicite, sans accès aux données locales.
+- Partage du brief préparé sur WhatsApp ; le visiteur valide son envoi dans la conversation.
+- Les éventuelles pièces jointes sont à joindre directement dans WhatsApp.
+- Aucun appel `/api` depuis la vitrine et aucune base de données nécessaire.
+- Aucune administration ni demande enregistrée côté serveur dans ce mode. `/admin` affiche la page introuvable.
 
-`vercel_app.py` n'importe pas `server.py` et ne crée aucun fichier SQLite. Les données locales ne sont pas transférées vers Vercel. L'ajout ultérieur de la gestion des demandes et du contenu depuis l'admin nécessitera un stockage durable externe et une autre configuration.
+Les coordonnées publiées sont définies dans `frontend/src/contact.ts`. Modifier `defaultContact`, faire un commit/push puis redéployer pour mettre à jour ces informations. Les variables backend `CONTACT_*` et `SOCIAL_*` ne sont pas lues par la vitrine autonome. Aucun mot de passe administrateur, secret SMTP ou URL de backend n'est à ajouter dans Vercel.
 
-## Importation après confirmation
-
-1. Envoyer les modifications confirmées sur GitHub.
-2. Recharger l'import du dépôt dans Vercel.
-3. Conserver la racine du projet `./` et le mode **Services**.
-4. Vérifier que les deux services sont nommés `app` et `frontend`, conformément au JSON.
-5. Les coordonnées ont déjà des valeurs publiques par défaut. Configurer au besoin `CONTACT_EMAIL`, `CONTACT_PHONE`, `CONTACT_WHATSAPP`, `CONTACT_LOCATION`, `CONTACT_MAPS_URL` et les variables `SOCIAL_*` pour remplacer les informations provisoires.
-6. Ne pas définir de secret administrateur ou SMTP pour cette vitrine : ils ne sont pas utilisés.
-7. Vérifier les pages, les images et l'ouverture du brief WhatsApp sur le déploiement obtenu.
-
-La compilation `npm run build:vitrine` définit le mode automatiquement. Les variables `VITE_*` sont publiques : ne jamais y mettre de secret. Le nom de projet et le domaine sont choisis dans Vercel ; ils ne sont pas codés en dur.
-
-L'offre Hobby de Vercel impose ses conditions d'usage personnel et non commercial. Une vitrine professionnelle conserve un usage commercial : vérifier le plan approprié avant publication. Cette configuration ne change pas ces conditions.
-
-## Vérifications
+## Vérification locale
 
 ```sh
+npm run setup
 npm run build:vitrine
 python -m unittest -v test_server.py test_vercel.py
 npm run test:browser -- --showcase
 ```
 
-Le test navigateur intercepte l'ouverture WhatsApp pour vérifier le texte et le numéro sans contacter WhatsApp ni envoyer de message. `npm run build` restaure ensuite le frontend connecté pour l'aperçu local avec `server.py`.
+Le test navigateur intercepte l'ouverture WhatsApp sans contacter ce service ni envoyer de message. Il vérifie aussi que le frontend ne fait aucun appel API. Les captures sont dans `.qa/` et ne sont pas publiées.
 
-Les builds locaux et tests applicatifs ne remplacent pas un build Vercel réel. La configuration est proposée pour confirmation avant envoi ; aucun projet Vercel n'est créé ou déployé par ces scripts.
+`npm run build` produit toujours la version connectée pour `server.py` et Docker. Le build Vercel choisit automatiquement le mode vitrine.
 
-Références : [Services](https://vercel.com/docs/services), [routage](https://vercel.com/docs/services/routing), [bindings](https://vercel.com/docs/services/bindings), [Vite](https://vercel.com/docs/frameworks/frontend/vite).
+L'offre Hobby de Vercel conserve ses conditions d'usage personnel et non commercial. Cette configuration technique ne change pas les conditions applicables à une vitrine professionnelle.
+
+Référence : [Vite sur Vercel](https://vercel.com/docs/frameworks/frontend/vite).

@@ -35,6 +35,7 @@ let id = 0;
 const pending = new Map();
 const runtimeErrors = [];
 const postedRequests = [];
+const apiRequests = [];
 function call(method, params = {}) {
   return new Promise((accept, reject) => {
     const key = ++id;
@@ -90,6 +91,7 @@ try {
     const message = JSON.parse(e.data);
     if (message.method === 'Runtime.exceptionThrown') runtimeErrors.push(message.params.exceptionDetails);
     if (message.method === 'Network.requestWillBeSent' && message.params.request.method === 'POST') postedRequests.push(message.params.request.url);
+    if (message.method === 'Network.requestWillBeSent' && message.params.request.url.includes('/api/')) apiRequests.push(message.params.request.url);
     const waiter = pending.get(message.id);
     if (!waiter) return;
     clearTimeout(waiter.timeout); pending.delete(message.id);
@@ -125,6 +127,7 @@ try {
     assert.equal(shared.pathname,'/22674033529');
     assert.ok(shared.searchParams.get('text').includes('Projet test vitrine'));
     assert.equal(postedRequests.some(url=>url.includes('/api/requests')),false,'No false server submission');
+    assert.equal(apiRequests.length,0,'Static showcase must not call a backend');
     await screenshot('vitrine-whatsapp-desktop',1440,1000);
     await screenshot('vitrine-whatsapp-mobile',390,844);
     assert.equal(await evaluate('document.documentElement.scrollWidth <= innerWidth'),true);

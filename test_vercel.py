@@ -36,14 +36,14 @@ class VercelShowcaseTests(unittest.TestCase):
                                 cwd=Path(__file__).parent, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
 
-    def test_service_routing_and_no_unusable_static_binding(self):
+    def test_single_static_showcase_configuration(self):
         config = json.loads((Path(__file__).parent / 'vercel.json').read_text(encoding='utf-8'))
-        self.assertEqual(set(config['services']), {'app', 'frontend'})
-        self.assertEqual(config['services']['app']['entrypoint'], 'vercel_app:application')
-        self.assertEqual(config['services']['frontend']['buildCommand'], 'npm run build:vitrine')
-        self.assertEqual(config['rewrites'][0], {'source': '/api/(.*)', 'destination': {'service': 'app'}})
-        self.assertEqual(config['rewrites'][-1], {'source': '/(.*)', 'destination': {'service': 'frontend'}})
-        self.assertFalse(any(service.get('bindings') for service in config['services'].values()))
+        self.assertNotIn('services', config)
+        self.assertEqual(config['framework'], 'vite')
+        self.assertEqual(config['buildCommand'], 'npm run build:vitrine')
+        self.assertEqual(config['installCommand'], 'npm run setup')
+        self.assertEqual(config['outputDirectory'], 'frontend/dist')
+        self.assertEqual(config['rewrites'], [{'source': '/(.*)', 'destination': '/index.html'}])
 
 
 if __name__ == '__main__':
