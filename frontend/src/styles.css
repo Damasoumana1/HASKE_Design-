@@ -375,6 +375,29 @@ em {
   font-weight:bold;
   color:var(--grey)
 }
+.service-marker {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px
+}
+.service-icon {
+  display:grid;
+  place-items:center;
+  width:44px;
+  height:44px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#f6f7f9;
+  color:var(--navy)
+}
+.service-icon svg {
+  width:26px;
+  height:26px
+}
+.service-icon-accent {
+  stroke:var(--orange)
+}
 .arrow {
   font-size:1.8rem;
   transition:transform .2s
@@ -1250,7 +1273,7 @@ form h3 {
     padding-block:60px
   }
   .service-line {
-    grid-template-columns:30px 1fr 30px;
+    grid-template-columns:44px 1fr 30px;
     gap:15px
   }
   .service-line p {

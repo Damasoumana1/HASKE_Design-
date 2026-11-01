@@ -63,9 +63,9 @@ async function go(path) {
   await until(`location.pathname === ${JSON.stringify(new URL(path, origin).pathname)} && document.readyState === 'complete' && !!document.querySelector('main h1')`);
   await delay(200);
 }
-async function screenshot(name, width, height, bottom = false) {
+async function screenshot(name, width, height, bottom = false, selector = null) {
   await call('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: width < 600 });
-  await evaluate(bottom ? 'window.scrollTo(0,document.body.scrollHeight)' : 'window.scrollTo(0,0)');
+  await evaluate(selector ? `document.querySelector(${JSON.stringify(selector)}).scrollIntoView({block:'start'})` : bottom ? 'window.scrollTo(0,document.body.scrollHeight)' : 'window.scrollTo(0,0)');
   await delay(850);
   const r = await call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
   writeFileSync(join(folder, name + '.png'), Buffer.from(r.data, 'base64'));
@@ -103,6 +103,18 @@ try {
   if (bilingual) {
     await go('/');
     assert.equal(await evaluate('document.documentElement.lang'), 'fr');
+    const serviceIds = ['graphique', 'impression', 'textile', 'objets', 'toile'];
+    assert.deepEqual(await evaluate(`Array.from(document.querySelectorAll('.service-line svg[data-service-icon]'), icon => icon.dataset.serviceIcon)`), serviceIds);
+    assert.deepEqual(await evaluate(`Array.from(document.querySelectorAll('.service-line'), link => link.getAttribute('href'))`), serviceIds.map(id => '/brief?service=' + id));
+    assert.equal(await evaluate(`new Set(Array.from(document.querySelectorAll('.service-line svg'), icon => icon.innerHTML)).size`), 5, 'Each service has a distinct icon');
+    assert.equal(await evaluate(`Array.from(document.querySelectorAll('.service-line svg')).every(icon => icon.getAttribute('aria-hidden') === 'true')`), true, 'Icons are decorative');
+    for (const width of [320, 390, 768, 1001, 1440]) {
+      await call('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: width < 600 });
+      assert.equal(await evaluate('document.documentElement.scrollWidth <= innerWidth'), true, `Homepage fits ${width}px`);
+    }
+    await screenshot('expertise-desktop', 1440, 1000, false, '.service-lines');
+    await screenshot('expertise-mobile', 390, 1000, false, '.service-lines');
+    await call('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
     await evaluate(`document.querySelector('button.language-picker').click()`);
     await until(`document.documentElement.lang==='en' && document.querySelector('h1').innerText.includes('Personalise')`);
     assert.equal(await evaluate('document.title'), 'Home — HASKE Design');
