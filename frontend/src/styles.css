@@ -109,7 +109,14 @@ em {
   align-items:center;
   justify-content:space-between;
   border-bottom:1px solid var(--line);
-  gap:32px
+  gap:20px
+}
+.language-picker { flex-shrink: 0; }
+.language-picker select { width: auto; min-width: 64px; min-height: 44px; padding: 8px; border: 1px solid var(--line); border-radius: 0; background: white; color: var(--navy); font: inherit; font-size: .8rem; font-weight: bold; cursor: pointer; }
+.language-picker select:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+@media (max-width: 1000px) {
+  .site-header .brand { margin-right: auto; }
+  .site-header .menu-toggle { order: 2; }
 }
 .brand {
   display:flex;

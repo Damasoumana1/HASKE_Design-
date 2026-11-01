@@ -99,7 +99,28 @@ try {
   });
   await call('Page.enable'); await call('Runtime.enable'); await call('Network.enable');
   await call('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
-  if (process.argv.includes('--showcase')) {
+  const bilingual = process.argv.includes('--i18n');
+  if (bilingual) {
+    await go('/');
+    assert.equal(await evaluate('document.documentElement.lang'), 'fr');
+    await evaluate(`document.querySelector('.language-picker select').value='en';document.querySelector('.language-picker select').dispatchEvent(new Event('change',{bubbles:true}))`);
+    await until(`document.documentElement.lang==='en' && document.querySelector('h1').innerText.includes('Personalise')`);
+    assert.equal(await evaluate('document.title'), 'Home — HASKE Design');
+    await screenshot('english-home-desktop', 1440, 1000);
+    for (const [path, title] of [['/services','Character, on every medium.'],['/realisations','Our world, in context.'],['/a-propos','An idea that lights up your world.'],['/contact','Your next idea starts here.'],['/confidentialite','Privacy.']]) {
+      await go(path);
+      assert.equal(await evaluate(`document.querySelector('h1').innerText`), title);
+      assert.equal(await evaluate('document.documentElement.lang'), 'en', 'Choice persists on reload');
+    }
+    await go('/contact');
+    await screenshot('english-contact-mobile', 390, 844);
+    assert.equal(await evaluate('document.documentElement.scrollWidth <= innerWidth'), true);
+    assert.equal(await evaluate(`document.querySelector('.language-picker select').getBoundingClientRect().right <= innerWidth`), true);
+    await evaluate(`document.querySelector('.menu-toggle').click()`);
+    await until(`document.querySelector('.nav').classList.contains('open') && document.querySelector('.nav').innerText.includes('Our work')`);
+    assert.ok((await evaluate(`document.querySelector('.nav').innerText`)).includes('Our work'));
+  }
+  if (process.argv.includes('--showcase') || bilingual) {
     await go('/services');
     await until(`Array.from(document.images).every(i => !i.complete || i.naturalWidth > 0)`);
     await go('/admin');
@@ -107,6 +128,10 @@ try {
     await go('/brief?service=objets');
     await evaluate(`document.querySelector('form').requestSubmit()`);
     await until(`!!document.querySelector('textarea')`);
+    if (bilingual) {
+      assert.equal(await evaluate(`document.querySelector('select[required] option:nth-child(2)').textContent`), 'Coffee cup / mug');
+      assert.equal(await evaluate(`document.querySelector('select[required] option:nth-child(2)').value`), 'Tasse à café / mug', 'Stored values remain compatible with backend and drafts');
+    }
     assert.equal(await evaluate(`document.querySelector('input[type=file]') === null`), true, 'Files shared in WhatsApp, no server upload');
     await evaluate(`(() => {
       const form=document.querySelector('form');
@@ -119,6 +144,14 @@ try {
     })()`);
     await evaluate(`document.querySelector('form').requestSubmit()`);
     await until(`!!document.querySelector('.recap')`);
+    if (bilingual) {
+      assert.ok((await evaluate(`document.querySelector('.recap').innerText`)).includes('Coffee cup / mug'));
+      await evaluate(`document.querySelector('.language-picker select').value='fr';document.querySelector('.language-picker select').dispatchEvent(new Event('change',{bubbles:true}))`);
+      await until(`document.querySelector('.recap').innerText.includes('Tasse à café / mug')`);
+      assert.ok((await evaluate(`document.querySelector('.recap').innerText`)).includes('Projet test vitrine'), 'Switching language preserves client input');
+      await evaluate(`document.querySelector('.language-picker select').value='en';document.querySelector('.language-picker select').dispatchEvent(new Event('change',{bubbles:true}))`);
+      await until(`document.querySelector('.recap').innerText.includes('Coffee cup / mug')`);
+    }
     await evaluate(`window.open=url=>{window.__sharedUrl=url;return null;};document.querySelector('input[type=checkbox]').click()`);
     await evaluate(`document.querySelector('form').requestSubmit()`);
     await until(`typeof window.__sharedUrl === 'string'`);
@@ -126,6 +159,11 @@ try {
     assert.equal(shared.hostname,'wa.me');
     assert.equal(shared.pathname,'/22674033529');
     assert.ok(shared.searchParams.get('text').includes('Projet test vitrine'));
+    if (bilingual) {
+      assert.ok(shared.searchParams.get('text').includes('PROJECT BRIEF'));
+      assert.ok(shared.searchParams.get('text').includes('Coffee cup / mug'));
+      assert.ok(shared.searchParams.get('text').includes('Name / organisation'));
+    }
     assert.equal(postedRequests.some(url=>url.includes('/api/requests')),false,'No false server submission');
     assert.equal(apiRequests.length,0,'Static showcase must not call a backend');
     await screenshot('vitrine-whatsapp-desktop',1440,1000);
