@@ -19,7 +19,7 @@ export const defaultContact: ContactDetails = {
   location: 'Ouagadougou, Karpala',
   mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Karpala%2C%20Ouagadougou%2C%20Burkina%20Faso',
   socials: [
-    { label: 'Facebook', url: 'https://www.facebook.com/' },
+    { label: 'Facebook', url: 'https://www.facebook.com/share/19f3hLtCKi/?mibextid=wwXIfr' },
     { label: 'TikTok', url: 'https://www.tiktok.com/' },
     { label: 'LinkedIn', url: 'https://www.linkedin.com/' },
   ],

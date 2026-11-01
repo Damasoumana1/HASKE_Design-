@@ -5,7 +5,7 @@ import os
 def contact_details():
     networks = [('Facebook', 'SOCIAL_FACEBOOK'), ('Instagram', 'SOCIAL_INSTAGRAM'),
                 ('TikTok', 'SOCIAL_TIKTOK'), ('LinkedIn', 'SOCIAL_LINKEDIN'), ('YouTube', 'SOCIAL_YOUTUBE')]
-    defaults = {'SOCIAL_FACEBOOK': 'https://www.facebook.com/',
+    defaults = {'SOCIAL_FACEBOOK': 'https://www.facebook.com/share/19f3hLtCKi/?mibextid=wwXIfr',
                 'SOCIAL_TIKTOK': 'https://www.tiktok.com/',
                 'SOCIAL_LINKEDIN': 'https://www.linkedin.com/'}
     return {
