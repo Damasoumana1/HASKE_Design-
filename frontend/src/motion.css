@@ -1,0 +1,90 @@
+/* Quiet, one-shot motion. Layout sizes stay unchanged while animating. */
+@media (prefers-reduced-motion: no-preference) {
+  .motion-reveal {
+    transition: opacity 520ms ease, transform 520ms cubic-bezier(.2,.7,.2,1);
+  }
+  .motion-reveal.motion-pending {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+  .motion-reveal:nth-child(3n + 2) { transition-delay: 60ms; }
+  .motion-reveal:nth-child(3n + 3) { transition-delay: 120ms; }
+
+  .projects-grid > .project {
+    animation: project-enter 320ms ease both;
+  }
+  .projects-grid > .project:nth-child(2) { animation-delay: 40ms; }
+  .projects-grid > .project:nth-child(3) { animation-delay: 80ms; }
+  .projects-grid > .project:nth-child(4) { animation-delay: 120ms; }
+  .brief-stage { animation: stage-enter 260ms ease both; }
+  .success-panel { animation: stage-enter 360ms ease both; }
+  .project-dialog[open], .confirm-dialog[open] { animation: dialog-enter 220ms ease both; }
+  .project-dialog[open]::backdrop, .confirm-dialog[open]::backdrop { animation: backdrop-enter 180ms ease both; }
+
+  .hero-figure > img, .work-duo > a > img, .service-detail > img, .project > img {
+    clip-path: inset(0);
+    transition: transform 450ms cubic-bezier(.2,.7,.2,1), clip-path 450ms cubic-bezier(.2,.7,.2,1), filter 300ms ease;
+  }
+  .button-arrow { display: inline-block; transition: transform 200ms ease; }
+  .button:hover .button-arrow, .text-link:hover .button-arrow { transform: translate(3px,-3px); }
+  .filters button, .service-choice, .steps li, .social-links a {
+    transition: color 200ms ease, background-color 200ms ease, border-color 200ms ease;
+  }
+  .text-link { transition: color 200ms ease, border-color 200ms ease; }
+
+  @keyframes project-enter {
+    from { opacity: 0; transform: translate3d(0,10px,0); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes stage-enter {
+    from { opacity: 0; transform: translate3d(0,8px,0); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes dialog-enter {
+    from { opacity: 0; transform: translateY(8px) scale(.985); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes backdrop-enter { from { opacity: 0; } to { opacity: 1; } }
+}
+
+/* Zoom stays inside each image's original rectangle. */
+.work-duo > a > img, .service-detail > img, .project > img, .hero-figure > img {
+  overflow: clip;
+  overflow-clip-margin: 0;
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .hero-figure:hover > img, .work-duo > a:hover > img, .service-detail:hover > img, .project:hover > img {
+    transform: scale(1.025);
+    clip-path: inset(1.22%);
+  }
+}
+.button:disabled:hover { transform: none; }
+
+/* Keep the closed menu out of keyboard navigation while it fades away. */
+@media (max-width: 1000px) {
+  .site-header .nav {
+    display: flex;
+    flex-direction: column;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: opacity 200ms ease, transform 200ms ease, visibility 200ms;
+  }
+  .site-header .nav.open {
+    display: flex;
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-reveal.motion-pending { opacity: 1; transform: none; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .site-header .nav { transform: none; }
+}
+@media print {
+  .motion-reveal.motion-pending { opacity: 1; transform: none; }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "haske-design-project",
+  "private": true,
+  "version": "2.0.0",
+  "scripts": {
+    "setup": "npm --prefix frontend ci",
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "typecheck": "npm --prefix frontend run typecheck",
+    "backend": "python server.py",
+    "test:backend": "python -m unittest -v test_server.py",
+    "test:browser": "node scripts/browser-smoke.mjs"
+  }
+}

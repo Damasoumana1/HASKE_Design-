@@ -1,0 +1,9 @@
+data
+.env*
+.git
+.venv
+__pycache__
+**/node_modules
+frontend/dist
+.npm-cache
+.qa
