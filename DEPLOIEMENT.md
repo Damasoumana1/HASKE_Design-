@@ -1,5 +1,7 @@
 # HASKE Design — React et backend Python
 
+Pour la configuration Vercel en mode vitrine avec WhatsApp, suivre [VERCEL.md](VERCEL.md). Ce guide décrit la version complète avec SQLite et administration connectée.
+
 Le frontend React / TypeScript / Tailwind CSS se compile avec Vite. Le backend Python conserve les briefs et leurs pièces jointes dans SQLite, fournit les sessions d'administration et gère une file de notifications SMTP. Le frontend compilé et l'API sont servis sur la même origine.
 
 ## Démarrer sous Windows

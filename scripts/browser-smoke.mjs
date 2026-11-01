@@ -34,6 +34,7 @@ let browser, ws;
 let id = 0;
 const pending = new Map();
 const runtimeErrors = [];
+const postedRequests = [];
 function call(method, params = {}) {
   return new Promise((accept, reject) => {
     const key = ++id;
@@ -88,14 +89,48 @@ try {
   ws.addEventListener('message', e => {
     const message = JSON.parse(e.data);
     if (message.method === 'Runtime.exceptionThrown') runtimeErrors.push(message.params.exceptionDetails);
+    if (message.method === 'Network.requestWillBeSent' && message.params.request.method === 'POST') postedRequests.push(message.params.request.url);
     const waiter = pending.get(message.id);
     if (!waiter) return;
     clearTimeout(waiter.timeout); pending.delete(message.id);
     if (message.error) waiter.reject(new Error(JSON.stringify(message.error))); else waiter.accept(message.result);
   });
-  await call('Page.enable'); await call('Runtime.enable');
+  await call('Page.enable'); await call('Runtime.enable'); await call('Network.enable');
   await call('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
-  if (process.argv.includes('--contact-only')) {
+  if (process.argv.includes('--showcase')) {
+    await go('/services');
+    await until(`Array.from(document.images).every(i => !i.complete || i.naturalWidth > 0)`);
+    await go('/admin');
+    assert.equal(await evaluate(`document.querySelector('input[type=password]') === null`), true, 'No online admin in showcase');
+    await go('/brief?service=objets');
+    await evaluate(`document.querySelector('form').requestSubmit()`);
+    await until(`!!document.querySelector('textarea')`);
+    assert.equal(await evaluate(`document.querySelector('input[type=file]') === null`), true, 'Files shared in WhatsApp, no server upload');
+    await evaluate(`(() => {
+      const form=document.querySelector('form');
+      for(const select of form.querySelectorAll('select[required]')){select.value=select.options[1].value;select.dispatchEvent(new Event('change',{bubbles:true}));}
+      for(const input of form.querySelectorAll('input[required],textarea[required]')){
+        const proto=input.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;
+        Object.getOwnPropertyDescriptor(proto,'value').set.call(input,input.type==='email'?'test@example.com':input.type==='number'?'12':'Projet test vitrine');
+        input.dispatchEvent(new Event('input',{bubbles:true}));
+      }
+    })()`);
+    await evaluate(`document.querySelector('form').requestSubmit()`);
+    await until(`!!document.querySelector('.recap')`);
+    await evaluate(`window.open=url=>{window.__sharedUrl=url;return null;};document.querySelector('input[type=checkbox]').click()`);
+    await evaluate(`document.querySelector('form').requestSubmit()`);
+    await until(`typeof window.__sharedUrl === 'string'`);
+    const shared = new URL(await evaluate('window.__sharedUrl'));
+    assert.equal(shared.hostname,'wa.me');
+    assert.equal(shared.pathname,'/22674033529');
+    assert.ok(shared.searchParams.get('text').includes('Projet test vitrine'));
+    assert.equal(postedRequests.some(url=>url.includes('/api/requests')),false,'No false server submission');
+    await screenshot('vitrine-whatsapp-desktop',1440,1000);
+    await screenshot('vitrine-whatsapp-mobile',390,844);
+    assert.equal(await evaluate('document.documentElement.scrollWidth <= innerWidth'),true);
+    assert.equal(runtimeErrors.length,0,JSON.stringify(runtimeErrors));
+    console.log(JSON.stringify({ok:true,screenshots:folder,checks:'Showcase brief shares prepared text through WhatsApp without requests POST, no admin, no files upload, responsive'}));
+  } else if (process.argv.includes('--contact-only')) {
     await go('/contact');
     await until(`document.querySelectorAll('footer .social-links a').length === 4`);
     assert.equal(await evaluate(`!!document.querySelector('footer a[href^="https://wa.me/22674033529"]')`), true);

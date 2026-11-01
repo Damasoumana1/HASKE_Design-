@@ -14,6 +14,7 @@ from datetime import datetime, timezone
 from contextlib import contextmanager
 from email.message import EmailMessage
 from pathlib import Path
+from public_contact import contact_details
 
 ROOT = Path(__file__).resolve().parent
 FRONTEND_DIST = ROOT / 'frontend' / 'dist'
@@ -221,16 +222,7 @@ def route(env):
     if path == '/api/health' and method == 'GET':
         return 200, {'ok': True}, headers
     if path == '/api/contact' and method == 'GET':
-        social_networks = [('Facebook', 'SOCIAL_FACEBOOK'), ('Instagram', 'SOCIAL_INSTAGRAM'), ('TikTok', 'SOCIAL_TIKTOK'), ('LinkedIn', 'SOCIAL_LINKEDIN'), ('YouTube', 'SOCIAL_YOUTUBE')]
-        social_defaults = {'SOCIAL_FACEBOOK': 'https://www.facebook.com/', 'SOCIAL_TIKTOK': 'https://www.tiktok.com/', 'SOCIAL_LINKEDIN': 'https://www.linkedin.com/'}
-        return 200, {
-            'email': os.environ.get('CONTACT_EMAIL', ''),
-            'phone': os.environ.get('CONTACT_PHONE') or '+226 74 03 35 29',
-            'whatsapp': os.environ.get('CONTACT_WHATSAPP') or '22674033529',
-            'location': os.environ.get('CONTACT_LOCATION') or 'Ouagadougou, Karpala',
-            'mapsUrl': os.environ.get('CONTACT_MAPS_URL') or 'https://www.google.com/maps/search/?api=1&query=Karpala%2C%20Ouagadougou%2C%20Burkina%20Faso',
-            'socials': [{'label': label, 'url': os.environ.get(key) or social_defaults.get(key)} for label, key in social_networks if os.environ.get(key) or social_defaults.get(key)],
-        }, headers
+        return 200, contact_details(), headers
     if path == '/api/requests' and method == 'POST':
         payload = read_json(env)
         if payload.get('website'):
@@ -327,7 +319,8 @@ def route(env):
             if asset.is_relative_to(asset_root) and asset.is_file() and asset.suffix in {'.js', '.css', '.webp', '.png', '.jpg', '.jpeg', '.svg', '.woff2', '.woff', '.ico'}:
                 import mimetypes
                 mime = {'.js': 'text/javascript', '.css': 'text/css'}.get(asset.suffix) or mimetypes.guess_type(asset.name)[0] or 'application/octet-stream'
-                return 200, asset.read_bytes(), [('Content-Type', mime), ('Cache-Control', 'public, max-age=31536000, immutable')]
+                cache = 'public, max-age=31536000, immutable' if re.search(r'-[A-Za-z0-9_-]{8,}\.', asset.name) else 'public, max-age=3600'
+                return 200, asset.read_bytes(), [('Content-Type', mime), ('Cache-Control', cache)]
             # Brand images live outside the build and retain their original URLs.
             if not re.fullmatch(r'/assets/[a-zA-Z0-9_-]+\.webp', path):
                 raise Problem(404, 'Ressource introuvable.')

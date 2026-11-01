@@ -116,13 +116,13 @@ class ServerTests(unittest.TestCase):
             build = server.Path(directory)
             (build / 'assets').mkdir()
             (build / 'index.html').write_text('<html><div id="root"></div></html>', encoding='utf-8')
-            (build / 'assets' / 'index-test.js').write_text('console.log("HASKE")', encoding='utf-8')
+            (build / 'assets' / 'index-test1234.js').write_text('console.log("HASKE")', encoding='utf-8')
             with patch.object(server, 'FRONTEND_DIST', build):
                 for path in ['/', '/services', '/realisations', '/a-propos', '/contact', '/brief', '/admin', '/confidentialite', '/services/']:
                     response = self.call(path)
                     self.assertEqual(response['code'], 200, path)
                     self.assertIn(b'id="root"', response['body'])
-                asset = self.call('/assets/index-test.js')
+                asset = self.call('/assets/index-test1234.js')
                 self.assertEqual(asset['code'], 200)
                 self.assertEqual(asset['headers']['Content-Type'], 'text/javascript')
                 self.assertIn('immutable', asset['headers']['Cache-Control'])

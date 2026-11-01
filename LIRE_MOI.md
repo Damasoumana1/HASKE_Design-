@@ -1,5 +1,7 @@
 # HASKE Design — React, TypeScript et Tailwind CSS
 
+Pour la publication vitrine sur Vercel avec partage du brief sur WhatsApp, voir [VERCEL.md](VERCEL.md). Les instructions ci-dessous concernent la version connectée locale.
+
 La nouvelle interface se trouve dans `frontend/`. Elle conserve le bleu marine `#0B2D5B`, l'orange `#FF7800`, le gris `#6B6B6B` et le blanc. Le serveur Python gère les demandes, les fichiers privés, les sessions d'administration et les notifications. SQLite conserve les données dans `data/`.
 
 ## Pages

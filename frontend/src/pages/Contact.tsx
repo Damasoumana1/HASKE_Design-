@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { isShowcase } from '../siteMode';
 import { defaultContact, useContact, whatsappUrl } from '../contact';
 
 export default function Contact() {
@@ -12,7 +13,7 @@ export default function Contact() {
   return <>
     <section className="page-intro wrap"><p className="eyebrow">Faisons connaissance</p><h1>Votre prochaine idée commence ici.</h1><p className="intro-text">Un projet précis, une envie à explorer ou une question sur un support ? Échangeons et donnons forme à votre idée.</p></section>
     <section className="contact-layout wrap section">
-      <div className="contact-panel"><p className="eyebrow">Le meilleur point de départ</p><h2>Quelques informations.<br />Une vraie direction.</h2><p>Notre brief vous guide en trois étapes. Choisissez un savoir-faire, décrivez votre idée et transmettez vos coordonnées.</p><Link className="button" to="/brief">Préparer mon brief <span className="button-arrow" aria-hidden="true">↗</span></Link><p className="text-grey">La demande est sans engagement. Faisabilité, tarifs et délais seront à confirmer.</p></div>
+      <div className="contact-panel"><p className="eyebrow">Le meilleur point de départ</p><h2>Quelques informations.<br />Une vraie direction.</h2><p>{isShowcase ? 'Préparez votre projet en trois étapes puis partagez le brief sur WhatsApp avec l’atelier.' : 'Notre brief vous guide en trois étapes. Choisissez un savoir-faire, décrivez votre idée et transmettez vos coordonnées.'}</p><Link className="button" to="/brief">Préparer mon brief <span className="button-arrow" aria-hidden="true">↗</span></Link><p className="text-grey">La demande est sans engagement. Faisabilité, tarifs et délais seront à confirmer.</p></div>
       <div><p className="eyebrow">En direct avec l’atelier</p><h2>Parlons de votre projet.</h2><dl className="contact-list">
         <div><dt>WhatsApp</dt><dd><a className="contact-number" href={whatsappUrl(contact.whatsapp)} target="_blank" rel="noopener noreferrer">{contact.phone} <span className="button-arrow" aria-hidden="true">↗</span></a><p className="contact-hint">Un message, une question, une première idée.</p></dd></div>
         <div><dt>Téléphone</dt><dd><a href={'tel:' + contact.phone.replace(/[^+\d]/g, '')}>{contact.phone}</a></dd></div>

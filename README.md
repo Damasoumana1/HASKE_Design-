@@ -44,7 +44,8 @@ Un workflow GitHub Actions lance la compilation du frontend et les tests du back
 
 - [Guide du projet](LIRE_MOI.md)
 - [Configuration et déploiement](DEPLOIEMENT.md)
+- [Vercel Services : vitrine avec WhatsApp](VERCEL.md)
 
-La version connectée nécessite un serveur Python et un stockage persistant pour SQLite. Un déploiement frontend statique seul sur Vercel ou Netlify ne fournit pas l'envoi des demandes ni l'administration connectée. L'adaptation à un backend externe n'est pas encore réalisée.
+La version connectée nécessite un serveur Python et un stockage persistant pour SQLite. Le mode Vercel `npm run build:vitrine` publie les pages et le brief à partager sur WhatsApp, avec une API publique sans état pour les coordonnées ; il n'active pas l'administration ni l'enregistrement des demandes. L'adaptation complète à un stockage externe n'est pas encore réalisée.
 
 Les coordonnées officielles, secrets d'administration, SMTP, sauvegardes et informations de confidentialité doivent être configurés avant une ouverture publique. Les données locales, fichiers `.env`, captures de test, dépendances et fichiers compilés sont exclus du dépôt.
