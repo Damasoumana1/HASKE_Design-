@@ -6,7 +6,7 @@ def contact_details():
     networks = [('Facebook', 'SOCIAL_FACEBOOK'), ('Instagram', 'SOCIAL_INSTAGRAM'),
                 ('TikTok', 'SOCIAL_TIKTOK'), ('LinkedIn', 'SOCIAL_LINKEDIN'), ('YouTube', 'SOCIAL_YOUTUBE')]
     defaults = {'SOCIAL_FACEBOOK': 'https://www.facebook.com/share/19f3hLtCKi/?mibextid=wwXIfr',
-                'SOCIAL_TIKTOK': 'https://www.tiktok.com/',
+                'SOCIAL_TIKTOK': 'https://www.tiktok.com/@haske_communication?_r=1&_t=ZS-9B2dWwfbnAm',
                 'SOCIAL_LINKEDIN': 'https://www.linkedin.com/'}
     return {
         'email': os.environ.get('CONTACT_EMAIL', ''),
