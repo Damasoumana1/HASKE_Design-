@@ -38,7 +38,7 @@ npm run test:browser -- --showcase
 
 Le test navigateur intercepte l'ouverture WhatsApp sans contacter ce service ni envoyer de message. Il vérifie aussi que le frontend ne fait aucun appel API. Les captures sont dans `.qa/` et ne sont pas publiées.
 
-La vitrine propose un sélecteur FR / EN dans l’en-tête, également accessible sur mobile. Le français est la langue initiale ; le choix est mémorisé localement sous `haske-language`. Les traductions anglaises se trouvent dans `frontend/src/en.json`. Les textes libres saisis par les clients restent inchangés et les valeurs des options du brief gardent leur format d’origine pour rester compatibles avec les brouillons et le backend. Le récapitulatif et les messages WhatsApp suivent la langue choisie.
+La vitrine propose un petit bouton rond avec une icône de globe et un repère FR / EN dans l’en-tête, également accessible sur mobile. Le français est la langue initiale ; le choix est mémorisé localement sous `haske-language`. Les traductions anglaises se trouvent dans `frontend/src/en.json`. Les textes libres saisis par les clients restent inchangés et les valeurs des options du brief gardent leur format d’origine pour rester compatibles avec les brouillons et le backend. Le récapitulatif et les messages WhatsApp suivent la langue choisie.
 
 Pour vérifier les deux langues, leur mémorisation et le partage WhatsApp : `npm run test:browser -- --i18n`, après `npm run build:vitrine`.
 

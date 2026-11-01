@@ -103,7 +103,7 @@ try {
   if (bilingual) {
     await go('/');
     assert.equal(await evaluate('document.documentElement.lang'), 'fr');
-    await evaluate(`document.querySelector('.language-picker select').value='en';document.querySelector('.language-picker select').dispatchEvent(new Event('change',{bubbles:true}))`);
+    await evaluate(`document.querySelector('button.language-picker').click()`);
     await until(`document.documentElement.lang==='en' && document.querySelector('h1').innerText.includes('Personalise')`);
     assert.equal(await evaluate('document.title'), 'Home — HASKE Design');
     await screenshot('english-home-desktop', 1440, 1000);
@@ -115,7 +115,7 @@ try {
     await go('/contact');
     await screenshot('english-contact-mobile', 390, 844);
     assert.equal(await evaluate('document.documentElement.scrollWidth <= innerWidth'), true);
-    assert.equal(await evaluate(`document.querySelector('.language-picker select').getBoundingClientRect().right <= innerWidth`), true);
+    assert.equal(await evaluate(`document.querySelector('button.language-picker').getBoundingClientRect().right <= innerWidth`), true);
     await evaluate(`document.querySelector('.menu-toggle').click()`);
     await until(`document.querySelector('.nav').classList.contains('open') && document.querySelector('.nav').innerText.includes('Our work')`);
     assert.ok((await evaluate(`document.querySelector('.nav').innerText`)).includes('Our work'));
@@ -146,10 +146,10 @@ try {
     await until(`!!document.querySelector('.recap')`);
     if (bilingual) {
       assert.ok((await evaluate(`document.querySelector('.recap').innerText`)).includes('Coffee cup / mug'));
-      await evaluate(`document.querySelector('.language-picker select').value='fr';document.querySelector('.language-picker select').dispatchEvent(new Event('change',{bubbles:true}))`);
+      await evaluate(`document.querySelector('button.language-picker').click()`);
       await until(`document.querySelector('.recap').innerText.includes('Tasse à café / mug')`);
       assert.ok((await evaluate(`document.querySelector('.recap').innerText`)).includes('Projet test vitrine'), 'Switching language preserves client input');
-      await evaluate(`document.querySelector('.language-picker select').value='en';document.querySelector('.language-picker select').dispatchEvent(new Event('change',{bubbles:true}))`);
+      await evaluate(`document.querySelector('button.language-picker').click()`);
       await until(`document.querySelector('.recap').innerText.includes('Coffee cup / mug')`);
     }
     await evaluate(`window.open=url=>{window.__sharedUrl=url;return null;};document.querySelector('input[type=checkbox]').click()`);
